@@ -8,7 +8,7 @@ internal class FlatIterator {
     @Test
     fun test() {
         val it = listOf(listOf(), listOf(11, 12), listOf(), listOf(21)).flatIterator()
-        
+
         assertEquals(it.hasNext(), true)
         assertEquals(it.next(), 11)
         assertEquals(it.hasNext(), true)
@@ -20,15 +20,15 @@ internal class FlatIterator {
         assertThrows<NoSuchElementException> { it.next() }
     }
 
-    fun List<List<Int>>.flatIterator(): Iterator<Int> = FlatIterator(this)
+    fun <T> List<List<T>>.flatIterator(): Iterator<T> = FlatIterator(this)
 
-    class FlatIterator(val list: List<List<Int>>, private val topListIterator: Iterator<List<Int>> = list.iterator()) :
-        Iterator<Int> {
+    class FlatIterator<T>(val list: List<List<T>>, private val topListIterator: Iterator<List<T>> = list.iterator()) :
+        Iterator<T> {
 
-        var currentListIterator: Iterator<Int>? = getNextSublistIterator()
+        var currentListIterator: Iterator<T>? = getNextSublistIterator()
 
         override fun hasNext(): Boolean = currentListIterator?.hasNext() ?: false
-        override fun next(): Int {
+        override fun next(): T {
             // it is a non-null local copy of the current list iterator. If we tried to use currentListIterator directly
             // we would get a compilation error unless we use null safe operator. This happens even if we check if
             // currentListIterator is null. That is because it is a var and its value could've been modified by another
@@ -43,8 +43,8 @@ internal class FlatIterator {
             return result
         }
 
-        private fun getNextSublistIterator(): Iterator<Int>? {
-            var it: Iterator<Int>?
+        private fun getNextSublistIterator(): Iterator<T>? {
+            var it: Iterator<T>?
             while (topListIterator.hasNext()) {
                 it = topListIterator.next().iterator()
                 if (it.hasNext()) {
